@@ -4,26 +4,40 @@
 <meta charset="UTF-8">
 <title>Business SetuIND Registration</title>
 <style>
-body{font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:20px;font-size:18px;}
-h1{font-size:2em;}
+body{font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:20px;font-size:18px;background:linear-gradient(180deg,#fdfaf3,#f2ecdd);min-height:100vh;}
+.logo-img{display:block;width:110px;height:110px;margin:0 auto 10px;border-radius:50%;}
+h1{font-size:1.8em;text-align:center;}
+.count{text-align:center;color:#555;font-size:0.95em;margin-bottom:15px;}
+.progress{display:flex;justify-content:space-between;margin-bottom:20px;}
+.progress div{flex:1;text-align:center;padding:8px 0;background:#eee;margin-right:4px;border-radius:6px;font-size:0.85em;font-weight:bold;color:#999;}
+.progress div.done{background:#1d3557;color:white;}
 label{font-size:1.1em;font-weight:bold;}
 input,select{width:100%;padding:12px;margin-top:5px;margin-bottom:15px;font-size:1.1em;border:1px solid #ccc;border-radius:6px;box-sizing:border-box;}
 button{width:100%;padding:14px;font-size:1.2em;background-color:#1d3557;color:white;border:none;border-radius:6px;cursor:pointer;margin-bottom:10px;}
 button:disabled{background-color:#aaa;}
 .step{display:none;}
 .active{display:block;}
-#message{font-size:1.1em;font-weight:bold;margin-top:15px;}
 .error{color:red;}
 .success{color:green;}
 small{display:block;margin-top:-10px;margin-bottom:10px;color:#666;}
 #timerText{font-weight:bold;color:#e63946;margin-bottom:10px;}
+.spinner{display:none;margin:10px auto;width:30px;height:30px;border:4px solid #ddd;border-top:4px solid #1d3557;border-radius:50%;animation:spin 1s linear infinite;}
+@keyframes spin{100%{transform:rotate(360deg);}}
+.terms{display:flex;align-items:flex-start;gap:8px;font-weight:normal;font-size:0.9em;margin-bottom:15px;}
+.terms input{width:auto;margin:3px 0 0 0;}
 </style>
 </head>
 <body>
-<h1><span style="color:#e63946;font-size:1.3em;">Business</span> <span style="color:#1d3557;">SetuIND</span> Registration</h1>
-<hr>
+<img src="logo.png" class="logo-img" alt="Business SetuIND Logo">
+<h1><span style="color:#e63946;">Business</span> <span style="color:#1d3557;">SetuIND</span></h1>
+<p class="count" id="countText">Loading...</p>
 
-<!-- STEP 1 -->
+<div class="progress">
+  <div id="p1" class="done">1. Basic</div>
+  <div id="p2">2. Personal</div>
+  <div id="p3">3. Study</div>
+</div>
+
 <div id="step1" class="step active">
   <h2>Step 1: Basic Details</h2>
   <label>Naam:</label>
@@ -33,6 +47,7 @@ small{display:block;margin-top:-10px;margin-bottom:10px;color:#666;}
   <label>Phone Number:</label>
   <input type="tel" id="phone" placeholder="Apna number likhein">
   <button id="sendOtpBtn" onclick="sendOtp()">Send OTP</button>
+  <div class="spinner" id="sendSpinner"></div>
 
   <div id="otpBox" style="display:none;">
     <p id="timerText"></p>
@@ -54,7 +69,6 @@ small{display:block;margin-top:-10px;margin-bottom:10px;color:#666;}
   <p id="step1Message"></p>
 </div>
 
-<!-- STEP 2 -->
 <div id="step2" class="step">
   <h2>Step 2: Personal Details</h2>
   <label>Date of Birth:</label>
@@ -69,22 +83,25 @@ small{display:block;margin-top:-10px;margin-bottom:10px;color:#666;}
   <button onclick="goToStep3()">Next</button>
 </div>
 
-<!-- STEP 3 -->
 <div id="step3" class="step">
   <h2>Step 3: Study & Skills</h2>
   <label>Study (Qualification):</label>
   <input type="text" id="study" placeholder="Jaise: 12th, B.Tech, etc.">
   <label>Skills:</label>
   <input type="text" id="skills" placeholder="Jaise: Coding, Design, etc.">
+  <div class="terms">
+    <input type="checkbox" id="termsCheck">
+    <label style="font-weight:normal;">Main terms & conditions se sehmat hoon</label>
+  </div>
   <button onclick="finalSubmit()">Register Karein</button>
   <p id="step3Message" class="error"></p>
 </div>
 
-<!-- STEP 4: SUCCESS -->
 <div id="step4" class="step">
   <h2 class="success">Registration Successful!</h2>
   <p id="finalIdMessage"></p>
   <p>Apni ID aur Password sambhal kar rakhein — inse aap dobara login karke apni details dekh sakte hain.</p>
+  <button onclick="shareId()" style="background-color:#457b9d;">Share Karein</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -108,6 +125,13 @@ let generatedOtp = "";
 let userData = {};
 let countdownInterval;
 let otpExpired = false;
+let finalBsId = "";
+
+db.collection("registrations").get().then((snap) => {
+  document.getElementById("countText").innerText = snap.size + " log register ho chuke hain";
+}).catch(() => {
+  document.getElementById("countText").innerText = "";
+});
 
 function isBlocked(email) {
   const blockUntil = localStorage.getItem("block_" + email);
@@ -165,18 +189,21 @@ function sendOtp() {
   localStorage.setItem("attempts_" + email, "0");
 
   document.getElementById("sendOtpBtn").disabled = true;
+  document.getElementById("sendSpinner").style.display = "block";
 
   emailjs.send("service_ul4e8ki", "template_mk9jp71", {
     to_name: naam,
     to_email: email,
     reg_id: "Aapka OTP hai: " + generatedOtp + " (60 second tak valid hai)"
   }).then(function() {
+    document.getElementById("sendSpinner").style.display = "none";
     msgBox.innerText = "OTP bhej diya gaya hai, apna email check karein.";
     msgBox.className = "success";
     document.getElementById("otpBox").style.display = "block";
     document.getElementById("otpInput").value = "";
     startTimer();
   }).catch(function(error) {
+    document.getElementById("sendSpinner").style.display = "none";
     msgBox.innerText = "Error: " + error.text;
     msgBox.className = "error";
     document.getElementById("sendOtpBtn").disabled = false;
@@ -240,6 +267,8 @@ function goToStep2() {
   userData.password = password;
   document.getElementById("step1").classList.remove("active");
   document.getElementById("step2").classList.add("active");
+  document.getElementById("p1").classList.remove("done");
+  document.getElementById("p2").classList.add("done");
 }
 
 function goToStep3() {
@@ -253,15 +282,22 @@ function goToStep3() {
   userData.gender = gender;
   document.getElementById("step2").classList.remove("active");
   document.getElementById("step3").classList.add("active");
+  document.getElementById("p2").classList.remove("done");
+  document.getElementById("p3").classList.add("done");
 }
 
 function finalSubmit() {
   const study = document.getElementById("study").value;
   const skills = document.getElementById("skills").value;
+  const termsChecked = document.getElementById("termsCheck").checked;
   const msgBox = document.getElementById("step3Message");
 
   if (!study || !skills) {
     msgBox.innerText = "Sabhi fields bharna zaroori hai.";
+    return;
+  }
+  if (!termsChecked) {
+    msgBox.innerText = "Terms & Conditions accept karna zaroori hai.";
     return;
   }
 
@@ -292,6 +328,7 @@ function finalSubmit() {
       return bsId;
     });
   }).then(function(bsId) {
+    finalBsId = bsId;
     document.getElementById("step3").classList.remove("active");
     document.getElementById("step4").classList.add("active");
     document.getElementById("finalIdMessage").innerText = "Aapki ID hai: " + bsId;
@@ -309,6 +346,16 @@ function finalSubmit() {
   }).catch(function(error) {
     msgBox.innerText = "Error: " + error.message;
   });
+}
+
+function shareId() {
+  const text = "Maine Business SetuIND par register kiya! Meri ID: " + finalBsId;
+  if (navigator.share) {
+    navigator.share({ text: text });
+  } else {
+    navigator.clipboard.writeText(text);
+    alert("Copy ho gaya, kahin bhi paste kar sakte hain.");
+  }
 }
 </script>
 </body>
