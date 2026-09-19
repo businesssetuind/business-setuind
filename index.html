@@ -2,34 +2,51 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Business SetuIND Registration</title>
+<title>Business SetuIND</title>
+<link rel="icon" type="image/png" href="logo.png">
 <style>
-body{font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:20px;font-size:18px;background:linear-gradient(180deg,#fdfaf3,#f2ecdd);min-height:100vh;}
-.logo-img{display:block;width:110px;height:110px;margin:0 auto 10px;border-radius:50%;}
+:root { color-scheme: light only; }
+body{font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:20px;font-size:18px;background:linear-gradient(180deg,#fdfaf3,#f2ecdd)!important;min-height:100vh;color:#000!important;}
+.logo-img{display:block;width:110px;height:110px;margin:0 auto 10px;border-radius:50%;object-fit:cover;border:3px solid #b8902e;}
 h1{font-size:1.8em;text-align:center;}
-.count{text-align:center;color:#555;font-size:0.95em;margin-bottom:15px;}
+.count{text-align:center;color:#555!important;font-size:0.95em;margin-bottom:15px;}
+.tabs{display:flex;margin-bottom:20px;}
+.tabs div{flex:1;text-align:center;padding:12px 0;background:#eee!important;color:#555!important;cursor:pointer;font-weight:bold;border-radius:6px;margin-right:5px;}
+.tabs div.activeTab{background:#1d3557!important;color:white!important;}
 .progress{display:flex;justify-content:space-between;margin-bottom:20px;}
-.progress div{flex:1;text-align:center;padding:8px 0;background:#eee;margin-right:4px;border-radius:6px;font-size:0.85em;font-weight:bold;color:#999;}
-.progress div.done{background:#1d3557;color:white;}
-label{font-size:1.1em;font-weight:bold;}
-input,select{width:100%;padding:12px;margin-top:5px;margin-bottom:15px;font-size:1.1em;border:1px solid #ccc;border-radius:6px;box-sizing:border-box;}
-button{width:100%;padding:14px;font-size:1.2em;background-color:#1d3557;color:white;border:none;border-radius:6px;cursor:pointer;margin-bottom:10px;}
-button:disabled{background-color:#aaa;}
-.step{display:none;}
+.progress div{flex:1;text-align:center;padding:8px 0;background:#eee!important;color:#999!important;margin-right:4px;border-radius:6px;font-size:0.85em;font-weight:bold;}
+.progress div.done{background:#1d3557!important;color:white!important;}
+label{font-size:1.1em;font-weight:bold;color:#000!important;}
+input,select{width:100%;padding:12px;margin-top:5px;margin-bottom:15px;font-size:1.1em;border:1px solid #ccc;border-radius:6px;box-sizing:border-box;background:#fff!important;color:#000!important;}
+button{width:100%;padding:14px;font-size:1.2em;background-color:#1d3557!important;color:white!important;border:none;border-radius:6px;cursor:pointer;margin-bottom:10px;}
+button:disabled{background-color:#aaa!important;}
+.step,.page{display:none;}
 .active{display:block;}
-.error{color:red;}
-.success{color:green;}
-small{display:block;margin-top:-10px;margin-bottom:10px;color:#666;}
-#timerText{font-weight:bold;color:#e63946;margin-bottom:10px;}
+.error{color:red!important;}
+.success{color:green!important;}
+small{display:block;margin-top:-10px;margin-bottom:10px;color:#666!important;}
+#timerText{font-weight:bold;color:#e63946!important;margin-bottom:10px;}
 .spinner{display:none;margin:10px auto;width:30px;height:30px;border:4px solid #ddd;border-top:4px solid #1d3557;border-radius:50%;animation:spin 1s linear infinite;}
 @keyframes spin{100%{transform:rotate(360deg);}}
 .terms{display:flex;align-items:flex-start;gap:8px;font-weight:normal;font-size:0.9em;margin-bottom:15px;}
 .terms input{width:auto;margin:3px 0 0 0;}
+h2{color:#000!important;}
+.link{color:#1d3557;text-align:center;display:block;margin-bottom:15px;cursor:pointer;text-decoration:underline;}
+#loginResult{margin-top:20px;font-size:1.1em;background:white;padding:15px;border-radius:6px;color:#000!important;}
+.hidden{display:none;}
 </style>
 </head>
 <body>
 <img src="logo.png" class="logo-img" alt="Business SetuIND Logo">
 <h1><span style="color:#e63946;">Business</span> <span style="color:#1d3557;">SetuIND</span></h1>
+
+<div class="tabs">
+  <div id="tabRegister" class="activeTab" onclick="showPage('registerPage')">Register</div>
+  <div id="tabLogin" onclick="showPage('loginPage')">Login</div>
+</div>
+
+<!-- ================= REGISTER PAGE ================= -->
+<div id="registerPage" class="page active">
 <p class="count" id="countText">Loading...</p>
 
 <div class="progress">
@@ -54,7 +71,7 @@ small{display:block;margin-top:-10px;margin-bottom:10px;color:#666;}
     <label>OTP Enter Karein:</label>
     <input type="text" id="otpInput" placeholder="6-digit OTP">
     <button id="verifyBtn" onclick="verifyOtp()">Verify OTP</button>
-    <button id="resendBtn" onclick="sendOtp()" style="display:none;background-color:#457b9d;">OTP Dobara Bhejein</button>
+    <button id="resendBtn" onclick="sendOtp()" style="display:none;background-color:#457b9d!important;">OTP Dobara Bhejein</button>
   </div>
 
   <div id="passwordBox" style="display:none;">
@@ -91,7 +108,7 @@ small{display:block;margin-top:-10px;margin-bottom:10px;color:#666;}
   <input type="text" id="skills" placeholder="Jaise: Coding, Design, etc.">
   <div class="terms">
     <input type="checkbox" id="termsCheck">
-    <label style="font-weight:normal;">Main terms & conditions se sehmat hoon</label>
+    <label style="font-weight:normal;">Main <span onclick="openTerms()" style="color:#1d3557;text-decoration:underline;cursor:pointer;">terms & conditions</span> se sehmat hoon</label>
   </div>
   <button onclick="finalSubmit()">Register Karein</button>
   <p id="step3Message" class="error"></p>
@@ -101,8 +118,63 @@ small{display:block;margin-top:-10px;margin-bottom:10px;color:#666;}
   <h2 class="success">Registration Successful!</h2>
   <p id="finalIdMessage"></p>
   <p>Apni ID aur Password sambhal kar rakhein — inse aap dobara login karke apni details dekh sakte hain.</p>
-  <button onclick="shareId()" style="background-color:#457b9d;">Share Karein</button>
+  <button onclick="shareId()" style="background-color:#457b9d!important;">Share Karein</button>
 </div>
+</div>
+
+<!-- ================= LOGIN PAGE ================= -->
+<div id="loginPage" class="page">
+  <div id="loginBox">
+    <label>Email:</label>
+    <input type="email" id="loginEmail">
+    <label>Password:</label>
+    <input type="password" id="loginPassword">
+    <button onclick="doLogin()">Login</button>
+    <span class="link" onclick="showForgot()">Password bhool gaye?</span>
+    <p id="loginMsg" class="error"></p>
+  </div>
+
+  <div id="forgotBox" class="hidden">
+    <h2>Password Reset</h2>
+    <label>Email:</label>
+    <input type="email" id="forgotEmail">
+    <button onclick="sendResetOtp()">OTP Bhejein</button>
+
+    <div id="resetOtpBox" class="hidden">
+      <label>OTP:</label>
+      <input type="text" id="resetOtpInput">
+      <button onclick="verifyResetOtp()">Verify</button>
+    </div>
+
+    <div id="newPassBox" class="hidden">
+      <label>Naya Password (8 characters, letters+numbers):</label>
+      <input type="password" id="newPassword">
+      <button onclick="setNewPassword()">Password Update Karein</button>
+    </div>
+
+    <p id="forgotMsg" class="error"></p>
+    <span class="link" onclick="showLoginForm()">Wapas Login karein</span>
+  </div>
+
+  <div id="loginResult"></div>
+</div>
+
+<div id="termsModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:999;">
+  <div style="background:white;max-width:450px;margin:40px auto;padding:20px;border-radius:8px;max-height:80vh;overflow-y:auto;">
+    <h2>Terms & Conditions</h2>
+    <p>1. Aapki di gayi jaankari sahi aur asli honi chahiye.</p>
+    <p>2. Registration ke baad di gayi ID aur password sambhal kar rakhein.</p>
+    <p>3. Aapki jaankari sirf registration aur verification ke liye istemal hogi.</p>
+    <p>4. Business SetuIND kisi galat jaankari ke liye zimmedar nahi hoga.</p>
+    <p>5. Yeh terms samay samay par badle ja sakte hain.</p>
+    <button onclick="closeTerms()" style="background-color:#1d3557!important;color:white!important;">Band Karein</button>
+  </div>
+</div>
+
+<footer style="text-align:center;margin-top:30px;padding:15px;font-size:0.85em;color:#777;border-top:1px solid #ddd;">
+  © 2026 Business SetuIND. All Rights Reserved.<br>
+  Contact: <a href="mailto:prabhatgangwar017@gmail.com">prabhatgangwar017@gmail.com</a>
+</footer>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -121,6 +193,19 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 emailjs.init("-M-ZM-DIiqz5GkntR");
 
+// ---------- TAB SWITCHING ----------
+function showPage(pageId) {
+  document.getElementById("registerPage").classList.remove("active");
+  document.getElementById("loginPage").classList.remove("active");
+  document.getElementById(pageId).classList.add("active");
+
+  document.getElementById("tabRegister").classList.remove("activeTab");
+  document.getElementById("tabLogin").classList.remove("activeTab");
+  if (pageId === "registerPage") document.getElementById("tabRegister").classList.add("activeTab");
+  else document.getElementById("tabLogin").classList.add("activeTab");
+}
+
+// ---------- REGISTRATION LOGIC ----------
 let generatedOtp = "";
 let userData = {};
 let countdownInterval;
@@ -347,7 +432,6 @@ function finalSubmit() {
     msgBox.innerText = "Error: " + error.message;
   });
 }
-
 function shareId() {
   const text = "Maine Business SetuIND par register kiya! Meri ID: " + finalBsId;
   if (navigator.share) {
@@ -357,6 +441,73 @@ function shareId() {
     alert("Copy ho gaya, kahin bhi paste kar sakte hain.");
   }
 }
-</script>
-</body>
-  </html>
+
+function openTerms() {
+  document.getElementById("termsModal").style.display = "block";
+}
+function closeTerms() {
+  document.getElementById("termsModal").style.display = "none";
+}
+
+// ---------- LOGIN LOGIC ----------
+let resetOtp = "";
+let resetDocId = "";
+
+function doLogin() {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+
+  db.collection("registrations").where("email", "==", email).get().then((snapshot) => {
+    if (snapshot.empty) {
+      document.getElementById("loginMsg").innerText = "Email nahi mila.";
+      return;
+    }
+    let found = false;
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      if (data.password === password) {
+        found = true;
+        document.getElementById("loginMsg").innerText = "";
+        document.getElementById("loginResult").innerHTML = `
+          <p><b>ID:</b> ${data.bsId}</p>
+          <p><b>Naam:</b> ${data.naam}</p>
+          <p><b>Phone:</b> ${data.phone}</p>
+          <p><b>DOB:</b> ${data.dob}</p>
+          <p><b>Gender:</b> ${data.gender}</p>
+          <p><b>Study:</b> ${data.study}</p>
+          <p><b>Skills:</b> ${data.skills}</p>
+        `;
+      }
+    });
+    if (!found) {
+      document.getElementById("loginMsg").innerText = "Password galat hai.";
+    }
+  });
+}
+
+function showForgot() {
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("forgotBox").classList.remove("hidden");
+}
+function showLoginForm() {
+  document.getElementById("forgotBox").classList.add("hidden");
+  document.getElementById("loginBox").classList.remove("hidden");
+}
+
+function sendResetOtp() {
+  const email = document.getElementById("forgotEmail").value;
+  const msgBox = document.getElementById("forgotMsg");
+
+  db.collection("registrations").where("email", "==", email).get().then((snapshot) => {
+    if (snapshot.empty) {
+      msgBox.innerText = "Yeh email registered nahi hai.";
+      return;
+    }
+    resetDocId = snapshot.docs[0].id;
+    resetOtp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    emailjs.send("service_ul4e8ki", "template_mk9jp71", {
+      to_name: "User",
+      to_email: email,
+      reg_id: "Aapka Password Reset OTP hai: " + resetOtp
+    }).then(() 
