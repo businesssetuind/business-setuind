@@ -1,72 +1,69 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <title>Business SetuIND - Admin Dashboard</title>
-  <style>
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    th { background-color: #f0f0f0; }
-  </style>
+<meta charset="UTF-8">
+<title>Business SetuIND - Admin Dashboard</title>
+<style>
+body{font-family:Arial,sans-serif;padding:15px;background:#fdfaf3;}
+.logo-img{display:block;width:70px;height:70px;margin:0 auto 10px;border-radius:50%;}
+table{border-collapse:collapse;width:100%;background:white;}
+th,td{border:1px solid #ccc;padding:8px;text-align:left;font-size:0.9em;}
+th{background-color:#1d3557;color:white;}
+#searchBox{width:100%;padding:12px;font-size:1.1em;margin-bottom:15px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box;}
+</style>
 </head>
 <body>
-  <h1>
-    <span style="color: #e63946; font-size: 1.3em;">Business</span>
-    <span style="color: #1d3557;">SetuIND</span>
-    Admin Dashboard
-  </h1>
-  <p>Sabhi Registrations:</p>
+<img src="logo.png" class="logo-img" alt="Logo">
+<h1><span style="color:#e63946;">Business</span> <span style="color:#1d3557;">SetuIND</span> Admin Dashboard</h1>
+<input type="text" id="searchBox" placeholder="Naam, Email ya ID se search karein..." onkeyup="filterTable()">
 
-  <table id="regTable">
-    <thead>
-      <tr>
-        <th>Registration ID</th>
-        <th>Naam</th>
-        <th>Email</th>
-        <th>Phone</th>
-        <th>DOB</th>
-        <th>Study</th>
-        <th>Skills</th>
-      </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-  </table>
+<table id="regTable">
+  <thead>
+    <tr><th>ID</th><th>Naam</th><th>Email</th><th>Phone</th><th>DOB</th><th>Gender</th><th>Study</th><th>Skills</th></tr>
+  </thead>
+  <tbody id="tableBody"></tbody>
+</table>
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAbLxLpAdGXx8ZvkdJlfVGPV3lT62t3qR0",
+  authDomain: "mera-registration.firebaseapp.com",
+  projectId: "mera-registration",
+  storageBucket: "mera-registration.firebasestorage.app",
+  messagingSenderId: "36065909120",
+  appId: "1:36065909120:web:b28429da32b0922e8e8965"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAbLxLpAdGXx8ZvkdJlfVGPV3lT62t3qR0",
-      authDomain: "mera-registration.firebaseapp.com",
-      projectId: "mera-registration",
-      storageBucket: "mera-registration.firebasestorage.app",
-      messagingSenderId: "36065909120",
-      appId: "1:36065909120:web:b28429da32b0922e8e8965"
-    };
+db.collection("registrations").orderBy("time", "desc").get().then((snapshot) => {
+  const tableBody = document.getElementById("tableBody");
+  snapshot.forEach((doc) => {
+    const data = doc.data();
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${data.bsId || "-"}</td>
+      <td>${data.naam || "-"}</td>
+      <td>${data.email || "-"}</td>
+      <td>${data.phone || "-"}</td>
+      <td>${data.dob || "-"}</td>
+      <td>${data.gender || "-"}</td>
+      <td>${data.study || "-"}</td>
+      <td>${data.skills || "-"}</td>
+    `;
+    tableBody.appendChild(row);
+  });
+});
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    db.collection("registrations").orderBy("time", "desc").get().then((snapshot) => {
-      const tableBody = document.getElementById("tableBody");
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${data.registrationId || "-"}</td>
-          <td>${data.naam || "-"}</td>
-          <td>${data.email || "-"}</td>
-          <td>${data.phone || "-"}</td>
-          <td>${data.dob || "-"}</td>
-          <td>${data.study || "-"}</td>
-          <td>${data.skills || "-"}</td>
-        `;
-        tableBody.appendChild(row);
-      });
-    }).catch((error) => {
-      document.getElementById("tableBody").innerHTML = "Error: " + error.message;
-    });
-  </script>
+function filterTable() {
+  const query = document.getElementById("searchBox").value.toLowerCase();
+  const rows = document.getElementById("tableBody").getElementsByTagName("tr");
+  for (let row of rows) {
+    row.style.display = row.innerText.toLowerCase().includes(query) ? "" : "none";
+  }
+}
+</script>
 </body>
 </html>
