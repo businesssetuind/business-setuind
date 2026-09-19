@@ -3,6 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <title>Business SetuIND Registration</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      font-size: 18px;
+    }
+    h1 { font-size: 2em; }
+    h2 { font-size: 1.5em; }
+    label {
+      font-size: 1.1em;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      font-size: 1.1em;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 1.2em;
+      background-color: #1d3557;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #message {
+      font-size: 1.1em;
+      font-weight: bold;
+      color: green;
+      margin-top: 15px;
+    }
+  </style>
 </head>
 <body>
   <h1>
@@ -16,23 +57,23 @@
   <h2>Registration Form</h2>
 
   <form id="regForm">
-    <label>Naam:</label><br>
-    <input type="text" id="naam" placeholder="Apna naam likhein"><br><br>
+    <label>Naam:</label>
+    <input type="text" id="naam" placeholder="Apna naam likhein">
 
-    <label>Email:</label><br>
-    <input type="email" id="email" placeholder="Apna email likhein"><br><br>
+    <label>Email:</label>
+    <input type="email" id="email" placeholder="Apna email likhein">
 
-    <label>Phone Number:</label><br>
-    <input type="tel" id="phone" placeholder="Apna number likhein"><br><br>
+    <label>Phone Number:</label>
+    <input type="tel" id="phone" placeholder="Apna number likhein">
 
-    <label>Date of Birth:</label><br>
-    <input type="date" id="dob"><br><br>
+    <label>Date of Birth:</label>
+    <input type="date" id="dob">
 
-    <label>Study (Qualification):</label><br>
-    <input type="text" id="study" placeholder="Jaise: 12th, B.Tech, etc."><br><br>
+    <label>Study (Qualification):</label>
+    <input type="text" id="study" placeholder="Jaise: 12th, B.Tech, etc.">
 
-    <label>Skills:</label><br>
-    <input type="text" id="skills" placeholder="Jaise: Coding, Design, etc."><br><br>
+    <label>Skills:</label>
+    <input type="text" id="skills" placeholder="Jaise: Coding, Design, etc.">
 
     <button type="submit">Register Karein</button>
   </form>
@@ -108,9 +149,19 @@
           to_email: email,
           reg_id: regId
         }).then(function() {
-          console.log("Email bhej diya gaya");
+          console.log("User email bhej diya gaya");
         }).catch(function(error) {
-          console.log("Email error: " + error.text);
+          console.log("User email error: " + error.text);
+        });
+
+        emailjs.send("service_ul4e8ki", "template_mk9jp71", {
+          to_name: "Admin",
+          to_email: "prabhatgangwar017@gmail.com",
+          reg_id: regId + " (Naya registration: " + naam + ", " + phone + ")"
+        }).then(function() {
+          console.log("Admin email bhej diya gaya");
+        }).catch(function(error) {
+          console.log("Admin email error: " + error.text);
         });
 
         document.getElementById("regForm").reset();
@@ -120,4 +171,4 @@
     });
   </script>
 </body>
-</html>
+      </html>
