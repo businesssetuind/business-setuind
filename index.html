@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <title>Business SetuIND Registration</title>
+</head>
+<body>
+  <h1>
+    <span style="color: #e63946; font-size: 1.3em;">Business</span>
+    <span style="color: #1d3557;">SetuIND</span>
+    Registration
+  </h1>
+
+  <hr>
+
+  <h2>Registration Form</h2>
+
+  <form id="regForm">
+    <label>Naam:</label><br>
+    <input type="text" id="naam" placeholder="Apna naam likhein"><br><br>
+
+    <label>Email:</label><br>
+    <input type="email" id="email" placeholder="Apna email likhein"><br><br>
+
+    <label>Phone Number:</label><br>
+    <input type="tel" id="phone" placeholder="Apna number likhein"><br><br>
+
+    <label>Date of Birth:</label><br>
+    <input type="date" id="dob"><br><br>
+
+    <label>Study (Qualification):</label><br>
+    <input type="text" id="study" placeholder="Jaise: 12th, B.Tech, etc."><br><br>
+
+    <label>Skills:</label><br>
+    <input type="text" id="skills" placeholder="Jaise: Coding, Design, etc."><br><br>
+
+    <button type="submit">Register Karein</button>
+  </form>
+
+  <p id="message"></p>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAbLxLpAdGXx8ZvkdJlfVGPV3lT62t3qR0",
+      authDomain: "mera-registration.firebaseapp.com",
+      projectId: "mera-registration",
+      storageBucket: "mera-registration.firebasestorage.app",
+      messagingSenderId: "36065909120",
+      appId: "1:36065909120:web:b28429da32b0922e8e8965"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    emailjs.init("-M-ZM-DIiqz5GkntR");
+
+    document.getElementById("regForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const naam = document.getElementById("naam").value;
+      const email = document.getElementById("email").value;
+      const phone = document.getElementById("phone").value;
+      const dob = document.getElementById("dob").value;
+      const study = document.getElementById("study").value;
+      const skills = document.getElementById("skills").value;
+
+      const counterRef = db.collection("counters").doc("registrationCounter");
+
+      db.runTransaction(function(transaction) {
+        return transaction.get(counterRef).then(function(doc) {
+          let newCount;
+          if (!doc.exists) {
+            newCount = 1;
+            transaction.set(counterRef, { count: 1 });
+          } else {
+            newCount = doc.data().count + 1;
+            transaction.update(counterRef, { count: newCount });
+          }
+
+          const regId = "REG-" + String(newCount).padStart(4, "0");
+
+          const newRegRef = db.collection("registrations").doc();
+          transaction.set(newRegRef, {
+            registrationId: regId,
+            naam: naam,
+            email: email,
+            phone: phone,
+            dob: dob,
+            study: study,
+            skills: skills,
+            time: new Date()
+          });
+
+          return regId;
+        });
+      }).then(function(regId) {
+        document.getElementById("message").innerText = "Registration ho gaya! Aapki ID hai: " + regId;
+
+        emailjs.send("service_ul4e8ki", "template_mk9jp71", {
+          to_name: naam,
+          to_email: email,
+          reg_id: regId
+        }).then(function() {
+          console.log("Email bhej diya gaya");
+        }).catch(function(error) {
+          console.log("Email error: " + error.text);
+        });
+
+        document.getElementById("regForm").reset();
+      }).catch(function(error) {
+        document.getElementById("message").innerText = "Error: " + error.message;
+      });
+    });
+  </script>
+</body>
+</html>

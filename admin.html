@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <title>Business SetuIND - Admin Dashboard</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f0f0f0; }
+  </style>
+</head>
+<body>
+  <h1>
+    <span style="color: #e63946; font-size: 1.3em;">Business</span>
+    <span style="color: #1d3557;">SetuIND</span>
+    Admin Dashboard
+  </h1>
+  <p>Sabhi Registrations:</p>
+
+  <table id="regTable">
+    <thead>
+      <tr>
+        <th>Registration ID</th>
+        <th>Naam</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>DOB</th>
+        <th>Study</th>
+        <th>Skills</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAbLxLpAdGXx8ZvkdJlfVGPV3lT62t3qR0",
+      authDomain: "mera-registration.firebaseapp.com",
+      projectId: "mera-registration",
+      storageBucket: "mera-registration.firebasestorage.app",
+      messagingSenderId: "36065909120",
+      appId: "1:36065909120:web:b28429da32b0922e8e8965"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    db.collection("registrations").orderBy("time", "desc").get().then((snapshot) => {
+      const tableBody = document.getElementById("tableBody");
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${data.registrationId || "-"}</td>
+          <td>${data.naam || "-"}</td>
+          <td>${data.email || "-"}</td>
+          <td>${data.phone || "-"}</td>
+          <td>${data.dob || "-"}</td>
+          <td>${data.study || "-"}</td>
+          <td>${data.skills || "-"}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }).catch((error) => {
+      document.getElementById("tableBody").innerHTML = "Error: " + error.message;
+    });
+  </script>
+</body>
+</html>
