@@ -510,4 +510,43 @@ function sendResetOtp() {
       to_name: "User",
       to_email: email,
       reg_id: "Aapka Password Reset OTP hai: " + resetOtp
-    }).then(() 
+    }).then(() => {
+      msgBox.innerText = "OTP bhej diya gaya hai.";
+      msgBox.className = "success";
+      document.getElementById("resetOtpBox").classList.remove("hidden");
+    });
+  });
+}
+
+function verifyResetOtp() {
+  const entered = document.getElementById("resetOtpInput").value;
+  const msgBox = document.getElementById("forgotMsg");
+  if (entered === resetOtp) {
+    msgBox.innerText = "OTP Verify ho gaya. Naya password banayein.";
+    msgBox.className = "success";
+    document.getElementById("newPassBox").classList.remove("hidden");
+  } else {
+    msgBox.innerText = "Galat OTP.";
+    msgBox.className = "error";
+  }
+}
+
+function setNewPassword() {
+  const newPassword = document.getElementById("newPassword").value;
+  const msgBox = document.getElementById("forgotMsg");
+  const rule = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+  if (!rule.test(newPassword)) {
+    msgBox.innerText = "Password 8 characters ka ho, letters+numbers dono hon.";
+    return;
+  }
+
+  db.collection("registrations").doc(resetDocId).update({ password: newPassword }).then(() => {
+    msgBox.innerText = "Password update ho gaya! Ab login karein.";
+    msgBox.className = "success";
+    setTimeout(showLoginForm, 2000);
+  });
+}
+</script>
+</body>
+</html
