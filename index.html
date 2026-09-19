@@ -1,174 +1,315 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <title>Business SetuIND Registration</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 500px;
-      margin: 0 auto;
-      padding: 20px;
-      font-size: 18px;
-    }
-    h1 { font-size: 2em; }
-    h2 { font-size: 1.5em; }
-    label {
-      font-size: 1.1em;
-      font-weight: bold;
-    }
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-top: 5px;
-      margin-bottom: 15px;
-      font-size: 1.1em;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-sizing: border-box;
-    }
-    button {
-      width: 100%;
-      padding: 14px;
-      font-size: 1.2em;
-      background-color: #1d3557;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    #message {
-      font-size: 1.1em;
-      font-weight: bold;
-      color: green;
-      margin-top: 15px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Business SetuIND Registration</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:20px;font-size:18px;}
+h1{font-size:2em;}
+label{font-size:1.1em;font-weight:bold;}
+input,select{width:100%;padding:12px;margin-top:5px;margin-bottom:15px;font-size:1.1em;border:1px solid #ccc;border-radius:6px;box-sizing:border-box;}
+button{width:100%;padding:14px;font-size:1.2em;background-color:#1d3557;color:white;border:none;border-radius:6px;cursor:pointer;margin-bottom:10px;}
+button:disabled{background-color:#aaa;}
+.step{display:none;}
+.active{display:block;}
+#message{font-size:1.1em;font-weight:bold;margin-top:15px;}
+.error{color:red;}
+.success{color:green;}
+small{display:block;margin-top:-10px;margin-bottom:10px;color:#666;}
+#timerText{font-weight:bold;color:#e63946;margin-bottom:10px;}
+</style>
 </head>
 <body>
-  <h1>
-    <span style="color: #e63946; font-size: 1.3em;">Business</span>
-    <span style="color: #1d3557;">SetuIND</span>
-    Registration
-  </h1>
+<h1><span style="color:#e63946;font-size:1.3em;">Business</span> <span style="color:#1d3557;">SetuIND</span> Registration</h1>
+<hr>
 
-  <hr>
+<!-- STEP 1 -->
+<div id="step1" class="step active">
+  <h2>Step 1: Basic Details</h2>
+  <label>Naam:</label>
+  <input type="text" id="naam" placeholder="Apna naam likhein">
+  <label>Email:</label>
+  <input type="email" id="email" placeholder="Apna email likhein">
+  <label>Phone Number:</label>
+  <input type="tel" id="phone" placeholder="Apna number likhein">
+  <button id="sendOtpBtn" onclick="sendOtp()">Send OTP</button>
 
-  <h2>Registration Form</h2>
+  <div id="otpBox" style="display:none;">
+    <p id="timerText"></p>
+    <label>OTP Enter Karein:</label>
+    <input type="text" id="otpInput" placeholder="6-digit OTP">
+    <button id="verifyBtn" onclick="verifyOtp()">Verify OTP</button>
+    <button id="resendBtn" onclick="sendOtp()" style="display:none;background-color:#457b9d;">OTP Dobara Bhejein</button>
+  </div>
 
-  <form id="regForm">
-    <label>Naam:</label>
-    <input type="text" id="naam" placeholder="Apna naam likhein">
+  <div id="passwordBox" style="display:none;">
+    <label>Password Banayein:</label>
+    <input type="password" id="password" placeholder="Kam se kam 8 characters">
+    <small>Password mein letters aur numbers dono hone chahiye (jaise: abc12345)</small>
+    <label>Password Confirm Karein:</label>
+    <input type="password" id="confirmPassword" placeholder="Password dobara likhein">
+    <button onclick="goToStep2()">Next</button>
+  </div>
 
-    <label>Email:</label>
-    <input type="email" id="email" placeholder="Apna email likhein">
+  <p id="step1Message"></p>
+</div>
 
-    <label>Phone Number:</label>
-    <input type="tel" id="phone" placeholder="Apna number likhein">
+<!-- STEP 2 -->
+<div id="step2" class="step">
+  <h2>Step 2: Personal Details</h2>
+  <label>Date of Birth:</label>
+  <input type="date" id="dob">
+  <label>Gender:</label>
+  <select id="gender">
+    <option value="">Select</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+    <option value="Other">Other</option>
+  </select>
+  <button onclick="goToStep3()">Next</button>
+</div>
 
-    <label>Date of Birth:</label>
-    <input type="date" id="dob">
+<!-- STEP 3 -->
+<div id="step3" class="step">
+  <h2>Step 3: Study & Skills</h2>
+  <label>Study (Qualification):</label>
+  <input type="text" id="study" placeholder="Jaise: 12th, B.Tech, etc.">
+  <label>Skills:</label>
+  <input type="text" id="skills" placeholder="Jaise: Coding, Design, etc.">
+  <button onclick="finalSubmit()">Register Karein</button>
+  <p id="step3Message" class="error"></p>
+</div>
 
-    <label>Study (Qualification):</label>
-    <input type="text" id="study" placeholder="Jaise: 12th, B.Tech, etc.">
+<!-- STEP 4: SUCCESS -->
+<div id="step4" class="step">
+  <h2 class="success">Registration Successful!</h2>
+  <p id="finalIdMessage"></p>
+  <p>Apni ID aur Password sambhal kar rakhein — inse aap dobara login karke apni details dekh sakte hain.</p>
+</div>
 
-    <label>Skills:</label>
-    <input type="text" id="skills" placeholder="Jaise: Coding, Design, etc.">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
-    <button type="submit">Register Karein</button>
-  </form>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAbLxLpAdGXx8ZvkdJlfVGPV3lT62t3qR0",
+  authDomain: "mera-registration.firebaseapp.com",
+  projectId: "mera-registration",
+  storageBucket: "mera-registration.firebasestorage.app",
+  messagingSenderId: "36065909120",
+  appId: "1:36065909120:web:b28429da32b0922e8e8965"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+emailjs.init("-M-ZM-DIiqz5GkntR");
 
-  <p id="message"></p>
+let generatedOtp = "";
+let userData = {};
+let countdownInterval;
+let otpExpired = false;
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+function isBlocked(email) {
+  const blockUntil = localStorage.getItem("block_" + email);
+  if (blockUntil && Date.now() < parseInt(blockUntil)) {
+    return Math.ceil((parseInt(blockUntil) - Date.now()) / (1000*60*60));
+  }
+  return 0;
+}
 
-  <!-- EmailJS SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+function startTimer() {
+  let timeLeft = 60;
+  otpExpired = false;
+  document.getElementById("verifyBtn").disabled = false;
+  document.getElementById("resendBtn").style.display = "none";
+  document.getElementById("timerText").innerText = "Time bacha hai: " + timeLeft + " second";
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAbLxLpAdGXx8ZvkdJlfVGPV3lT62t3qR0",
-      authDomain: "mera-registration.firebaseapp.com",
-      projectId: "mera-registration",
-      storageBucket: "mera-registration.firebasestorage.app",
-      messagingSenderId: "36065909120",
-      appId: "1:36065909120:web:b28429da32b0922e8e8965"
-    };
+  clearInterval(countdownInterval);
+  countdownInterval = setInterval(function() {
+    timeLeft--;
+    document.getElementById("timerText").innerText = "Time bacha hai: " + timeLeft + " second";
+    if (timeLeft <= 0) {
+      clearInterval(countdownInterval);
+      otpExpired = true;
+      document.getElementById("timerText").innerText = "OTP expire ho gaya!";
+      document.getElementById("verifyBtn").disabled = true;
+      document.getElementById("resendBtn").style.display = "block";
+    }
+  }, 1000);
+}
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+function sendOtp() {
+  const naam = document.getElementById("naam").value;
+  const email = document.getElementById("email").value;
+  const phone = document.getElementById("phone").value;
+  const msgBox = document.getElementById("step1Message");
 
-    emailjs.init("-M-ZM-DIiqz5GkntR");
+  if (!naam || !email || !phone) {
+    msgBox.innerText = "Sabhi fields bharna zaroori hai.";
+    msgBox.className = "error";
+    return;
+  }
 
-    document.getElementById("regForm").addEventListener("submit", function(e) {
-      e.preventDefault();
+  const blockedHours = isBlocked(email);
+  if (blockedHours > 0) {
+    msgBox.innerText = "Aap " + blockedHours + " ghante ke liye block hain. Baad mein try karein.";
+    msgBox.className = "error";
+    return;
+  }
 
-      const naam = document.getElementById("naam").value;
-      const email = document.getElementById("email").value;
-      const phone = document.getElementById("phone").value;
-      const dob = document.getElementById("dob").value;
-      const study = document.getElementById("study").value;
-      const skills = document.getElementById("skills").value;
+  userData.naam = naam;
+  userData.email = email;
+  userData.phone = phone;
 
-      const counterRef = db.collection("counters").doc("registrationCounter");
+  generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+  localStorage.setItem("attempts_" + email, "0");
 
-      db.runTransaction(function(transaction) {
-        return transaction.get(counterRef).then(function(doc) {
-          let newCount;
-          if (!doc.exists) {
-            newCount = 1;
-            transaction.set(counterRef, { count: 1 });
-          } else {
-            newCount = doc.data().count + 1;
-            transaction.update(counterRef, { count: newCount });
-          }
+  document.getElementById("sendOtpBtn").disabled = true;
 
-          const regId = "REG-" + String(newCount).padStart(4, "0");
+  emailjs.send("service_ul4e8ki", "template_mk9jp71", {
+    to_name: naam,
+    to_email: email,
+    reg_id: "Aapka OTP hai: " + generatedOtp + " (60 second tak valid hai)"
+  }).then(function() {
+    msgBox.innerText = "OTP bhej diya gaya hai, apna email check karein.";
+    msgBox.className = "success";
+    document.getElementById("otpBox").style.display = "block";
+    document.getElementById("otpInput").value = "";
+    startTimer();
+  }).catch(function(error) {
+    msgBox.innerText = "Error: " + error.text;
+    msgBox.className = "error";
+    document.getElementById("sendOtpBtn").disabled = false;
+  });
+}
 
-          const newRegRef = db.collection("registrations").doc();
-          transaction.set(newRegRef, {
-            registrationId: regId,
-            naam: naam,
-            email: email,
-            phone: phone,
-            dob: dob,
-            study: study,
-            skills: skills,
-            time: new Date()
-          });
+function verifyOtp() {
+  const email = document.getElementById("email").value;
+  const enteredOtp = document.getElementById("otpInput").value;
+  const msgBox = document.getElementById("step1Message");
 
-          return regId;
-        });
-      }).then(function(regId) {
-        document.getElementById("message").innerText = "Registration ho gaya! Aapki ID hai: " + regId;
+  if (otpExpired) {
+    msgBox.innerText = "OTP expire ho chuka hai. Dobara bhejein.";
+    msgBox.className = "error";
+    return;
+  }
 
-        emailjs.send("service_ul4e8ki", "template_mk9jp71", {
-          to_name: naam,
-          to_email: email,
-          reg_id: regId
-        }).then(function() {
-          console.log("User email bhej diya gaya");
-        }).catch(function(error) {
-          console.log("User email error: " + error.text);
-        });
+  if (enteredOtp === generatedOtp) {
+    clearInterval(countdownInterval);
+    msgBox.innerText = "OTP Verify ho gaya! Ab password banayein.";
+    msgBox.className = "success";
+    document.getElementById("otpBox").style.display = "none";
+    document.getElementById("passwordBox").style.display = "block";
+  } else {
+    let attempts = parseInt(localStorage.getItem("attempts_" + email) || "0");
+    attempts++;
+    localStorage.setItem("attempts_" + email, attempts.toString());
 
-        emailjs.send("service_ul4e8ki", "template_mk9jp71", {
-          to_name: "Admin",
-          to_email: "prabhatgangwar017@gmail.com",
-          reg_id: regId + " (Naya registration: " + naam + ", " + phone + ")"
-        }).then(function() {
-          console.log("Admin email bhej diya gaya");
-        }).catch(function(error) {
-          console.log("Admin email error: " + error.text);
-        });
+    if (attempts >= 2) {
+      const blockUntil = Date.now() + (24 * 60 * 60 * 1000);
+      localStorage.setItem("block_" + email, blockUntil.toString());
+      msgBox.innerText = "2 baar galat OTP. Aap 24 ghante ke liye block ho gaye hain.";
+      clearInterval(countdownInterval);
+      document.getElementById("verifyBtn").disabled = true;
+      document.getElementById("resendBtn").style.display = "none";
+    } else {
+      msgBox.innerText = "Galat OTP. Ek aur mauka hai.";
+    }
+    msgBox.className = "error";
+  }
+}
 
-        document.getElementById("regForm").reset();
-      }).catch(function(error) {
-        document.getElementById("message").innerText = "Error: " + error.message;
+function goToStep2() {
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+  const msgBox = document.getElementById("step1Message");
+
+  const passwordRule = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+  if (!passwordRule.test(password)) {
+    msgBox.innerText = "Password kam se kam 8 characters ka ho, jisme letters aur numbers dono hon.";
+    msgBox.className = "error";
+    return;
+  }
+  if (password !== confirmPassword) {
+    msgBox.innerText = "Password match nahi ho raha.";
+    msgBox.className = "error";
+    return;
+  }
+
+  userData.password = password;
+  document.getElementById("step1").classList.remove("active");
+  document.getElementById("step2").classList.add("active");
+}
+
+function goToStep3() {
+  const dob = document.getElementById("dob").value;
+  const gender = document.getElementById("gender").value;
+  if (!dob || !gender) {
+    alert("Date of Birth aur Gender bharna zaroori hai.");
+    return;
+  }
+  userData.dob = dob;
+  userData.gender = gender;
+  document.getElementById("step2").classList.remove("active");
+  document.getElementById("step3").classList.add("active");
+}
+
+function finalSubmit() {
+  const study = document.getElementById("study").value;
+  const skills = document.getElementById("skills").value;
+  const msgBox = document.getElementById("step3Message");
+
+  if (!study || !skills) {
+    msgBox.innerText = "Sabhi fields bharna zaroori hai.";
+    return;
+  }
+
+  userData.study = study;
+  userData.skills = skills;
+
+  const counterRef = db.collection("counters").doc("bsIdCounter");
+
+  db.runTransaction(function(transaction) {
+    return transaction.get(counterRef).then(function(doc) {
+      let newCount = doc.exists ? doc.data().count + 1 : 1;
+      transaction.set(counterRef, { count: newCount });
+
+      const bsId = "BS IND ID " + String(newCount).padStart(6, "0");
+      const newRegRef = db.collection("registrations").doc();
+      transaction.set(newRegRef, {
+        bsId: bsId,
+        naam: userData.naam,
+        email: userData.email,
+        phone: userData.phone,
+        dob: userData.dob,
+        gender: userData.gender,
+        study: userData.study,
+        skills: userData.skills,
+        password: userData.password,
+        time: new Date()
       });
+      return bsId;
     });
-  </script>
+  }).then(function(bsId) {
+    document.getElementById("step3").classList.remove("active");
+    document.getElementById("step4").classList.add("active");
+    document.getElementById("finalIdMessage").innerText = "Aapki ID hai: " + bsId;
+
+    emailjs.send("service_ul4e8ki", "template_mk9jp71", {
+      to_name: userData.naam,
+      to_email: userData.email,
+      reg_id: bsId
+    });
+    emailjs.send("service_ul4e8ki", "template_mk9jp71", {
+      to_name: "Admin",
+      to_email: "prabhatgangwar017@gmail.com",
+      reg_id: bsId + " (Naya registration: " + userData.naam + ", " + userData.phone + ")"
+    });
+  }).catch(function(error) {
+    msgBox.innerText = "Error: " + error.message;
+  });
+}
+</script>
 </body>
-      </html>
+  </html>
