@@ -492,7 +492,34 @@ function shareId() {
     alert("Copy ho gaya, kahin bhi paste kar sakte hain.");
   }
 }
+function downloadCard() {
+  const card = document.getElementById("idCard");
+  const canvas = document.createElement("canvas");
+  canvas.width = 400;
+  canvas.height = 250;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#fdfaf3";
+  ctx.fillRect(0, 0, 400, 250);
+  ctx.strokeStyle = "#b8902e";
+  ctx.lineWidth = 4;
+  ctx.strokeRect(5, 5, 390, 240);
+  ctx.fillStyle = "#1d3557";
+  ctx.font = "bold 20px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText(document.getElementById("cardName").innerText, 200, 60);
+  ctx.font = "16px Arial";
+  ctx.fillText(document.getElementById("cardId").innerText, 200, 100);
+  ctx.fillText(document.getElementById("cardStudy").innerText, 200, 140);
+  ctx.fillText(document.getElementById("cardSkills").innerText, 200, 170);
+  ctx.font = "12px Arial";
+  ctx.fillStyle = "#b8902e";
+  ctx.fillText("Business SetuIND", 200, 220);
 
+  const link = document.createElement("a");
+  link.download = "BusinessSetuIND-ID-Card.png";
+  link.href = canvas.toDataURL();
+  link.click();
+  }
 function openTerms() {
   document.getElementById("termsModal").style.display = "block";
 }
