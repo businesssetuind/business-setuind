@@ -490,4 +490,113 @@ function openAbout() {
   openInfo("About Us", "<p>Business SetuIND ek registration platform hai jo logon ko aasani se register karne, apni skills aur qualification share karne, aur ek unique BS IND ID pane mein madad karta hai.</p><p>Hamara maksad hai simple aur bharosemand tarike se logon ko jodna.</p>");
 }
 function openPrivacy() {
-  openInfo("Privacy Policy", "<p>Hum aapki 
+  openInfo("Privacy Policy", "<p>Hum aapki jaankari (naam, email, phone, DOB, study, skills) sirf registration aur verification ke liye istemal karte hain.</p><p>Aapka data kisi third-party ko becha ya share nahi kiya jayega.</p><p>Password surakshit tareeke se encrypt karke save hota hai.</p>");
+}
+function openFAQ() {
+  openInfo("FAQ", "<p><b>Q: Registration free hai?</b><br>Haan, abhi registration bilkul free hai.</p><p><b>Q: OTP nahi mila to?</b><br>Spam folder check karein, ya 'OTP Dobara Bhejein' dabayein.</p><p><b>Q: Password bhool gaye to?</b><br>Login page par 'Password bhool gaye?' par tap karein.</p>");
+}
+
+// ---------- LOGIN LOGIC ----------
+let resetOtp = "";
+let resetDocId = "";
+
+async function doLogin() {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+  const hashedInput = await hashPassword(password);
+
+  db.collection("registrations").where("email", "==", email).get().then((snapshot) => {
+    if (snapshot.empty) {
+      document.getElementById("loginMsg").innerText = "Email nahi mila.";
+      return;
+    }
+    let found = false;
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      if (data.password === hashedInput) {
+        found = true;
+        document.getElementById("loginMsg").innerText = "";
+        document.getElementById("loginResult").innerHTML = `
+          <p><b>ID:</b> ${data.bsId}</p>
+          <p><b>Naam:</b> ${data.naam}</p>
+          <p><b>Phone:</b> ${data.phone}</p>
+          <p><b>DOB:</b> ${data.dob}</p>
+          <p><b>Gender:</b> ${data.gender}</p>
+          <p><b>Study:</b> ${data.study}</p>
+          <p><b>Skills:</b> ${data.skills}</p>
+          <p><b>Status:</b> ${data.status || "Pending"}</p>
+        `;
+      }
+    });
+    if (!found) {
+      document.getElementById("loginMsg").innerText = "Password galat hai.";
+    }
+  });
+}
+
+function showForgot() {
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("forgotBox").classList.remove("hidden");
+}
+function showLoginForm() {
+  document.getElementById("forgotBox").classList.add("hidden");
+  document.getElementById("loginBox").classList.remove("hidden");
+}
+
+function sendResetOtp() {
+  const email = document.getElementById("forgotEmail").value;
+  const msgBox = document.getElementById("forgotMsg");
+
+  db.collection("registrations").where("email", "==", email).get().then((snapshot) => {
+    if (snapshot.empty) {
+      msgBox.innerText = "Yeh email registered nahi hai.";
+      return;
+    }
+    resetDocId = snapshot.docs[0].id;
+    resetOtp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    emailjs.send("service_ul4e8ki", "template_mk9jp71", {
+      to_name: "User",
+      to_email: email,
+      reg_id: "Aapka Password Reset OTP hai: " + resetOtp
+    }).then(() => {
+      msgBox.innerText = "OTP bhej diya gaya hai.";
+      msgBox.className = "success";
+      document.getElementById("resetOtpBox").classList.remove("hidden");
+    });
+  });
+}
+
+function verifyResetOtp() {
+  const entered = document.getElementById("resetOtpInput").value;
+  const msgBox = document.getElementById("forgotMsg");
+  if (entered === resetOtp) {
+    msgBox.innerText = "OTP Verify ho gaya. Naya password banayein.";
+    msgBox.className = "success";
+    document.getElementById("newPassBox").classList.remove("hidden");
+  } else {
+    msgBox.innerText = "Galat OTP.";
+    msgBox.className = "error";
+  }
+}
+
+async function setNewPassword() {
+  const newPassword = document.getElementById("newPassword").value;
+  const msgBox = document.getElementById("forgotMsg");
+  const rule = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+  if (!rule.test(newPassword)) {
+    msgBox.innerText = "Password 8 characters ka ho, letters+numbers dono hon.";
+    return;
+  }
+
+  const hashed = await hashPassword(newPassword);
+  db.collection("registrations").doc(resetDocId).update({ password: hashed }).then(() => {
+    msgBox.innerText = "Password update ho gaya! Ab login karein.";
+    msgBox.className = "success";
+    setTimeout(showLoginForm, 2000);
+  });
+}
+</script>
+</body>
+</html>
