@@ -7,19 +7,22 @@
 body{font-family:Arial,sans-serif;padding:15px;background:#fdfaf3;}
 .logo-img{display:block;width:70px;height:70px;margin:0 auto 10px;border-radius:50%;}
 table{border-collapse:collapse;width:100%;background:white;}
-th,td{border:1px solid #ccc;padding:8px;text-align:left;font-size:0.9em;}
+th,td{border:1px solid #ccc;padding:8px;text-align:left;font-size:0.85em;}
 th{background-color:#1d3557;color:white;}
 #searchBox{width:100%;padding:12px;font-size:1.1em;margin-bottom:15px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box;}
+#exportBtn{padding:10px 15px;background:#457b9d;color:white;border:none;border-radius:6px;margin-bottom:15px;cursor:pointer;}
+select.statusSelect{padding:4px;border-radius:4px;}
 </style>
 </head>
 <body>
 <img src="logo.png" class="logo-img" alt="Logo">
 <h1><span style="color:#e63946;">Business</span> <span style="color:#1d3557;">SetuIND</span> Admin Dashboard</h1>
 <input type="text" id="searchBox" placeholder="Naam, Email ya ID se search karein..." onkeyup="filterTable()">
+<button id="exportBtn" onclick="exportCSV()">Excel/CSV Download Karein</button>
 
 <table id="regTable">
   <thead>
-    <tr><th>ID</th><th>Naam</th><th>Email</th><th>Phone</th><th>DOB</th><th>Gender</th><th>Study</th><th>Skills</th></tr>
+    <tr><th>ID</th><th>Naam</th><th>Email</th><th>Phone</th><th>DOB</th><th>Gender</th><th>Study</th><th>Skills</th><th>Status</th></tr>
   </thead>
   <tbody id="tableBody"></tbody>
 </table>
@@ -38,10 +41,13 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+let allData = [];
+
 db.collection("registrations").orderBy("time", "desc").get().then((snapshot) => {
   const tableBody = document.getElementById("tableBody");
   snapshot.forEach((doc) => {
     const data = doc.data();
+    allData.push(data);
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${data.bsId || "-"}</td>
@@ -52,10 +58,21 @@ db.collection("registrations").orderBy("time", "desc").get().then((snapshot) => 
       <td>${data.gender || "-"}</td>
       <td>${data.study || "-"}</td>
       <td>${data.skills || "-"}</td>
+      <td>
+        <select class="statusSelect" onchange="updateStatus('${doc.id}', this.value)">
+          <option value="Pending" ${data.status==="Pending"?"selected":""}>Pending</option>
+          <option value="Approved" ${data.status==="Approved"?"selected":""}>Approved</option>
+          <option value="Rejected" ${data.status==="Rejected"?"selected":""}>Rejected</option>
+        </select>
+      </td>
     `;
     tableBody.appendChild(row);
   });
 });
+
+function updateStatus(docId, newStatus) {
+  db.collection("registrations").doc(docId).update({ status: newStatus });
+}
 
 function filterTable() {
   const query = document.getElementById("searchBox").value.toLowerCase();
@@ -63,6 +80,18 @@ function filterTable() {
   for (let row of rows) {
     row.style.display = row.innerText.toLowerCase().includes(query) ? "" : "none";
   }
+}
+
+function exportCSV() {
+  let csv = "ID,Naam,Email,Phone,DOB,Gender,Study,Skills,Status\n";
+  allData.forEach(d => {
+    csv += `"${d.bsId||""}","${d.naam||""}","${d.email||""}","${d.phone||""}","${d.dob||""}","${d.gender||""}","${d.study||""}","${d.skills||""}","${d.status||"Pending"}"\n`;
+  });
+  const blob = new Blob([csv], { type: "text/csv" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "business-setuind-registrations.csv";
+  link.click();
 }
 </script>
 </body>
