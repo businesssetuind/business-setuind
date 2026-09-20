@@ -34,6 +34,8 @@ h2{color:#000!important;}
 .link{color:#1d3557;text-align:center;display:block;margin-bottom:15px;cursor:pointer;text-decoration:underline;}
 #loginResult{margin-top:20px;font-size:1.1em;background:white;padding:15px;border-radius:6px;color:#000!important;}
 .hidden{display:none;}
+.footer-links a,.footer-links span{color:#1d3557;text-decoration:underline;cursor:pointer;margin:0 5px;}
+.social a{margin:0 8px;text-decoration:none;font-size:1.3em;}
 </style>
 </head>
 <body>
@@ -171,9 +173,26 @@ h2{color:#000!important;}
   </div>
 </div>
 
+<div id="infoModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:999;">
+  <div style="background:white;max-width:450px;margin:40px auto;padding:20px;border-radius:8px;max-height:80vh;overflow-y:auto;">
+    <h2 id="infoModalTitle"></h2>
+    <div id="infoModalBody"></div>
+    <button onclick="closeInfo()" style="background-color:#1d3557!important;color:white!important;">Band Karein</button>
+  </div>
+</div>
+
 <footer style="text-align:center;margin-top:30px;padding:15px;font-size:0.85em;color:#777;border-top:1px solid #ddd;">
   © 2026 Business SetuIND. All Rights Reserved.<br>
-  Contact: <a href="mailto:prabhatgangwar017@gmail.com">prabhatgangwar017@gmail.com</a>
+  Contact: <a href="mailto:prabhatgangwar017@gmail.com">prabhatgangwar017@gmail.com</a><br>
+  <div class="footer-links" style="margin-top:8px;">
+    <span onclick="openAbout()">About Us</span> |
+    <span onclick="openPrivacy()">Privacy Policy</span> |
+    <span onclick="openFAQ()">FAQ</span>
+  </div>
+  <div class="social" style="margin-top:8px;">
+    <a href="#" title="Instagram">📷</a>
+    <a href="#" title="WhatsApp">💬</a>
+  </div>
 </footer>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -192,6 +211,13 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 emailjs.init("-M-ZM-DIiqz5GkntR");
+
+// ---------- PASSWORD HASHING ----------
+async function hashPassword(password) {
+  const enc = new TextEncoder().encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 // ---------- TAB SWITCHING ----------
 function showPage(pageId) {
@@ -331,7 +357,7 @@ function verifyOtp() {
   }
 }
 
-function goToStep2() {
+async function goToStep2() {
   const password = document.getElementById("password").value;
   const confirmPassword = document.getElementById("confirmPassword").value;
   const msgBox = document.getElementById("step1Message");
@@ -349,7 +375,7 @@ function goToStep2() {
     return;
   }
 
-  userData.password = password;
+  userData.password = await hashPassword(password);
   document.getElementById("step1").classList.remove("active");
   document.getElementById("step2").classList.add("active");
   document.getElementById("p1").classList.remove("done");
@@ -408,6 +434,7 @@ function finalSubmit() {
         study: userData.study,
         skills: userData.skills,
         password: userData.password,
+        status: "Pending",
         time: new Date()
       });
       return bsId;
@@ -432,6 +459,7 @@ function finalSubmit() {
     msgBox.innerText = "Error: " + error.message;
   });
 }
+
 function shareId() {
   const text = "Maine Business SetuIND par register kiya! Meri ID: " + finalBsId;
   if (navigator.share) {
@@ -449,104 +477,17 @@ function closeTerms() {
   document.getElementById("termsModal").style.display = "none";
 }
 
-// ---------- LOGIN LOGIC ----------
-let resetOtp = "";
-let resetDocId = "";
-
-function doLogin() {
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
-
-  db.collection("registrations").where("email", "==", email).get().then((snapshot) => {
-    if (snapshot.empty) {
-      document.getElementById("loginMsg").innerText = "Email nahi mila.";
-      return;
-    }
-    let found = false;
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-      if (data.password === password) {
-        found = true;
-        document.getElementById("loginMsg").innerText = "";
-        document.getElementById("loginResult").innerHTML = `
-          <p><b>ID:</b> ${data.bsId}</p>
-          <p><b>Naam:</b> ${data.naam}</p>
-          <p><b>Phone:</b> ${data.phone}</p>
-          <p><b>DOB:</b> ${data.dob}</p>
-          <p><b>Gender:</b> ${data.gender}</p>
-          <p><b>Study:</b> ${data.study}</p>
-          <p><b>Skills:</b> ${data.skills}</p>
-        `;
-      }
-    });
-    if (!found) {
-      document.getElementById("loginMsg").innerText = "Password galat hai.";
-    }
-  });
+// ---------- INFO MODALS: About / Privacy / FAQ ----------
+function openInfo(title, html) {
+  document.getElementById("infoModalTitle").innerText = title;
+  document.getElementById("infoModalBody").innerHTML = html;
+  document.getElementById("infoModal").style.display = "block";
 }
-
-function showForgot() {
-  document.getElementById("loginBox").classList.add("hidden");
-  document.getElementById("forgotBox").classList.remove("hidden");
+function closeInfo() {
+  document.getElementById("infoModal").style.display = "none";
 }
-function showLoginForm() {
-  document.getElementById("forgotBox").classList.add("hidden");
-  document.getElementById("loginBox").classList.remove("hidden");
+function openAbout() {
+  openInfo("About Us", "<p>Business SetuIND ek registration platform hai jo logon ko aasani se register karne, apni skills aur qualification share karne, aur ek unique BS IND ID pane mein madad karta hai.</p><p>Hamara maksad hai simple aur bharosemand tarike se logon ko jodna.</p>");
 }
-
-function sendResetOtp() {
-  const email = document.getElementById("forgotEmail").value;
-  const msgBox = document.getElementById("forgotMsg");
-
-  db.collection("registrations").where("email", "==", email).get().then((snapshot) => {
-    if (snapshot.empty) {
-      msgBox.innerText = "Yeh email registered nahi hai.";
-      return;
-    }
-    resetDocId = snapshot.docs[0].id;
-    resetOtp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    emailjs.send("service_ul4e8ki", "template_mk9jp71", {
-      to_name: "User",
-      to_email: email,
-      reg_id: "Aapka Password Reset OTP hai: " + resetOtp
-    }).then(() => {
-      msgBox.innerText = "OTP bhej diya gaya hai.";
-      msgBox.className = "success";
-      document.getElementById("resetOtpBox").classList.remove("hidden");
-    });
-  });
-}
-
-function verifyResetOtp() {
-  const entered = document.getElementById("resetOtpInput").value;
-  const msgBox = document.getElementById("forgotMsg");
-  if (entered === resetOtp) {
-    msgBox.innerText = "OTP Verify ho gaya. Naya password banayein.";
-    msgBox.className = "success";
-    document.getElementById("newPassBox").classList.remove("hidden");
-  } else {
-    msgBox.innerText = "Galat OTP.";
-    msgBox.className = "error";
-  }
-}
-
-function setNewPassword() {
-  const newPassword = document.getElementById("newPassword").value;
-  const msgBox = document.getElementById("forgotMsg");
-  const rule = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-
-  if (!rule.test(newPassword)) {
-    msgBox.innerText = "Password 8 characters ka ho, letters+numbers dono hon.";
-    return;
-  }
-
-  db.collection("registrations").doc(resetDocId).update({ password: newPassword }).then(() => {
-    msgBox.innerText = "Password update ho gaya! Ab login karein.";
-    msgBox.className = "success";
-    setTimeout(showLoginForm, 2000);
-  });
-}
-</script>
-</body>
-</html
+function openPrivacy() {
+  openInfo("Privacy Policy", "<p>Hum aapki 
