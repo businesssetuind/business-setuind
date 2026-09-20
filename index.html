@@ -461,11 +461,13 @@ function finalSubmit() {
       return bsId;
     });
   }).then(function(bsId) {
-    finalBsId = bsId;
+        finalBsId = bsId;
     document.getElementById("step3").classList.remove("active");
     document.getElementById("step4").classList.add("active");
-    document.getElementById("finalIdMessage").innerText = "Aapki ID hai: " + bsId;
-
+    document.getElementById("cardName").innerText = userData.naam;
+    document.getElementById("cardId").innerText = "ID: " + bsId;
+    document.getElementById("cardStudy").innerText = "Study: " + userData.study;
+    document.getElementById("cardSkills").innerText = "Skills: " + userData.skills;
     emailjs.send("service_ul4e8ki", "template_mk9jp71", {
       to_name: userData.naam,
       to_email: userData.email,
