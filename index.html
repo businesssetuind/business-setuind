@@ -555,6 +555,7 @@ function finalSubmit() {
         finalBsId = bsId;
     document.getElementById("step3").classList.remove("active");
     document.getElementById("step4").classList.add("active");
+    document.getElementById("cardPhoto").src = userData.photo || "logo.png";
     document.getElementById("cardName").innerText = userData.naam;
     document.getElementById("cardId").innerText = "ID: " + bsId;
     document.getElementById("cardStudy").innerText = "Study: " + userData.study;
