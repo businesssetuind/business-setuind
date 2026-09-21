@@ -165,8 +165,11 @@ h2{color:#000!important;}
   <h2>Step 3: Study & Skills</h2>
   <label>Study (Qualification):</label>
   <input type="text" id="study" placeholder="Jaise: 12th, B.Tech, etc.">
-  <label>Skills:</label>
+    <label>Skills:</label>
   <input type="text" id="skills" placeholder="Jaise: Coding, Design, etc.">
+  <label>Apni Photo Chunein:</label>
+  <input type="file" id="photoInput" accept="image/*">
+  <img id="photoPreview" style="display:none;width:90px;height:90px;border-radius:8px;object-fit:cover;margin-bottom:15px;border:2px solid #b8902e;">
   <div class="terms">
     <input type="checkbox" id="termsCheck">
     <label style="font-weight:normal;">Main <span onclick="openTerms()" style="color:#1d3557;text-decoration:underline;cursor:pointer;">terms & conditions</span> se sehmat hoon</label>
