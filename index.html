@@ -467,7 +467,30 @@ async function goToStep2() {
   document.getElementById("p1").classList.remove("done");
   document.getElementById("p2").classList.add("done");
 }
-
+document.addEventListener("change", function(e) {
+  if (e.target.id !== "photoInput") return;
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement("canvas");
+      const size = 200;
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, size, size);
+      const compressed = canvas.toDataURL("image/jpeg", 0.6);
+      userData.photo = compressed;
+      const preview = document.getElementById("photoPreview");
+      preview.src = compressed;
+      preview.style.display = "block";
+    };
+    img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+});
 function goToStep3() {
   const dob = document.getElementById("dob").value;
   const gender = document.getElementById("gender").value;
