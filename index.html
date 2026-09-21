@@ -285,9 +285,22 @@ async function hashPassword(password) {
 }
 
 // ---------- TAB SWITCHING ----------
-  db.collection("registrations").get().then((snap) => {
+function animateCount(el, target) {
+  let current = 0;
+  const step = Math.max(1, Math.ceil(target / 40));
+  const interval = setInterval(() => {
+    current += step;
+    if (current >= target) {
+      current = target;
+      clearInterval(interval);
+    }
+    el.innerText = current + "+";
+  }, 30);
+}
+
+db.collection("registrations").get().then((snap) => {
   const el = document.getElementById("statCount");
-  if (el) el.innerText = snap.size + "+";
+  if (el) animateCount(el, snap.size);
 }).catch(() => {});
 function showPage(pageId) {
   document.getElementById("registerPage").classList.remove("active");
