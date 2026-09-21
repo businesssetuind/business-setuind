@@ -52,23 +52,27 @@ h2{color:#000!important;}
 </style>
 </head>
 <body>
-<img src="logo.png" class="logo-img" alt="Business SetuIND Logo">
-<h1><span style="color:#e63946;">Business</span> <span style="color:#1d3557;">SetuIND</span></h1>
+<div class="navbar">
+  <img src="logo.png" class="nav-logo" alt="Logo">
+  <div class="nav-title"><span style="color:#e63946;">Business</span> <span style="color:#1d3557;">SetuIND</span></div>
+  <div class="nav-buttons">
+    <button class="navBtn" onclick="showPage('registerPage')">Sign Up</button>
+    <button class="navBtn" style="background-color:#457b9d!important;" onclick="showPage('loginPage')">Login</button>
+  </div>
+</div>
+
 <div style="text-align:center;background:white;padding:15px;border-radius:8px;margin-bottom:20px;box-shadow:0 2px 5px rgba(0,0,0,0.1);">
   <p style="margin:0 0 10px 0;color:#555;font-size:0.95em;">Business SetuIND aapko ek pehchan deta hai — apni skills register karein, ek digital ID payein, aur naye avsaron se judein.</p>
-  <div style="display:flex;justify-content:space-around;font-size:0.85em;color:#1d3557;font-weight:bold;">
+  <div style="display:flex;justify-content:space-around;font-size:0.85em;color:#1d3557;font-weight:bold;margin-bottom:12px;">
     <div>🆔<br>Digital ID</div>
     <div>📚<br>Skill Registry</div>
     <div>🤝<br>Networking</div>
   </div>
-</div>
-<div class="tabs">
-  <div id="tabRegister" class="activeTab" onclick="showPage('registerPage')">Register</div>
-  <div id="tabLogin" onclick="showPage('loginPage')">Login</div>
+  <button onclick="showPage('registerPage')" style="background-color:#1d3557!important;">Register Karein</button>
 </div>
 
 <!-- ================= REGISTER PAGE ================= -->
-<div id="registerPage" class="page active">
+<div id="registerPage" class="page">
 <p class="count" id="countText">Loading...</p>
 
 <div class="progress">
