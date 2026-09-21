@@ -284,6 +284,10 @@ async function hashPassword(password) {
 }
 
 // ---------- TAB SWITCHING ----------
+  db.collection("registrations").get().then((snap) => {
+  const el = document.getElementById("statCount");
+  if (el) el.innerText = snap.size + "+";
+}).catch(() => {});
 function showPage(pageId) {
   document.getElementById("registerPage").classList.remove("active");
   document.getElementById("loginPage").classList.remove("active");
