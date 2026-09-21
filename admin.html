@@ -64,12 +64,21 @@ db.collection("registrations").orderBy("time", "desc").get().then((snapshot) => 
           <option value="Pending" ${data.status==="Pending"?"selected":""}>Pending</option>
           <option value="Approved" ${data.status==="Approved"?"selected":""}>Approved</option>
           <option value="Rejected" ${data.status==="Rejected"?"selected":""}>Rejected</option>
-        </select>
+          </select>
       </td>
+      <td><button onclick="deleteReg('${doc.id}')" style="background:#e63946;color:white;border:none;padding:6px 10px;border-radius:4px;cursor:pointer;">Delete</button></td>
     `;
     tableBody.appendChild(row);
   });
 });
+
+function deleteReg(id) {
+  if (confirm("Pakka is registration ko delete karna hai? Yeh wapas nahi aayega.")) {
+    db.collection("registrations").doc(id).delete().then(() => {
+      location.reload();
+    });
+  }
+}
 
 function updateStatus(docId, newStatus) {
   db.collection("registrations").doc(docId).update({ status: newStatus });
